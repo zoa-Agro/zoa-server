@@ -77,6 +77,36 @@ async function run() {
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
+    //get users 
+    app.get("/users", verifyJWT, async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+
+    //make seller
+    app.patch("/users/seller/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedUser = {
+        $set: {
+          role: "seller",
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updatedUser);
+      res.send(result);
+    });
+    //make user
+    app.patch("/users/user/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedUser = {
+        $set: {
+          role: "user",
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updatedUser);
+      res.send(result);
+    });
 
     //post product in plants collections
     app.post("/plants", verifyJWT, async (req, res) => {
@@ -172,7 +202,7 @@ async function run() {
       res.send(deletePromises);
     });
     // Update  products
-    app.patch("/update-product/:id",verifyJWT async (req, res) => {
+    app.patch("/update-product/:id",verifyJWT, async (req, res) => {
       const id = req.params.id;
       const data = req.body.data;
       const query = { _id: new ObjectId(id) };
