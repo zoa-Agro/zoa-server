@@ -157,6 +157,41 @@ async function run() {
       const result = await toolsCollection.insertOne(data);
       res.send(result);
     });
+    //get all products
+    app.get('/all-products', async(req, res)=>{
+              const { category, subCategory }=req.query;
+             
+              const collections = [
+                "plantsCollection",
+                "birdsCollection",
+                "fishesCollection",
+                "animalsCollection",
+                "foodsCollection",
+                "medicinesCollection",
+                "toolsCollection",
+              ];
+               let filter = {};
+               if (category !=='null' && category !== undefined) {
+                filter.category = category;
+              }
+            
+               if(subCategory){
+                filter.subCategory=subCategory;
+                }
+               
+console.log("filter" ,filter);
+const results = [];
+for (const collectionName of collections) {
+  const products = await db
+    .collection(collectionName)
+    .find(filter)
+    .toArray();
+  results.push(...products);
+}
+console.log(results);
+res.send(results);
+
+    })
     // get seller products
     app.get("/products", async (req, res) => {
       const email = req.query.email;
