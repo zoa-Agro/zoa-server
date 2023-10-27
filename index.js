@@ -159,7 +159,7 @@ async function run() {
     });
     //get all products
     app.get('/all-products', async(req, res)=>{
-              const { category, subCategory }=req.query;
+              const { category, subCategory, sortDirection}=req.query;
              
               const collections = [
                 "plantsCollection",
@@ -171,7 +171,7 @@ async function run() {
                 "toolsCollection",
               ];
                let filter = {};
-               if (category !=='null' && category !== undefined) {
+               if (category !=='null' && category !== 'undefined' ) {
                 filter.category = category;
               }
             
@@ -188,6 +188,17 @@ for (const collectionName of collections) {
     .toArray();
   results.push(...products);
 }
+// Sort the results based on price
+if (sortDirection) {
+  if (sortDirection === "low to high") {
+    results.sort((a, b) => a.price - b.price); // Ascending (low to high)
+  } else if (sortDirection === "high to low") {
+    results.sort((a, b) => b.price - a.price); // Descending (high to low)
+  }
+}
+
+
+
 console.log(results);
 res.send(results);
 
@@ -277,6 +288,7 @@ res.send(results);
       });
       res.send(updatePromises);
     });
+    // post cart data to database
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
